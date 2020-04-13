@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import {database} from '../firebase';
+// import {database} from '../firebase';
 import _ from 'lodash';
+import { connect } from 'react-redux';
+import { getSongs, saveSong, deleteNote } from '../actions/songsAction';
+import SongCard from './SongCard';
+
 class App extends Component {
 
 	constructor(props) {
@@ -9,7 +13,6 @@ class App extends Component {
 			title: '',
 			url: '',
 			description: '',
-			songs: ''
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -18,12 +21,7 @@ class App extends Component {
 
 	//lifecycle
 	componentDidMount() {
-		database.on('value', (snapshot) => {
-			console.log('SNAPSHOT', snapshot.val());
-			this.setState({
-				songs: snapshot.val()
-			});
-		})
+		this.props.getSongs();
 	}
 
 	//handle submit
@@ -35,7 +33,7 @@ class App extends Component {
 			url: this.state.url,
 			description: this.state.description,
 		}
-		database.push(song);
+		this.props.saveSong(song)
 		this.setState({
 			title: '',
 			url: '',
@@ -53,13 +51,14 @@ class App extends Component {
 
 	//render posts
 	renderSongs() {
-		return _.map(this.state.songs, (song, key) => {
+		return _.map(this.props.songs, (song, key) => {
 			return (
-				<div key={key}>
+				<SongCard key={key}>
 					<h2>{song.title}</h2>
 					<h4>{song.url}</h4>
 					<p>{song.description}</p>
-				</div>
+					<button className="btn btn-danger btn-xs" onClick={()=>this.props.deleteNote(key)}>delete</button>
+				</SongCard>
 			)
 		});
 	}
@@ -101,4 +100,14 @@ class App extends Component {
 
 }
 
-export default App;
+function mapStateToProps(state, ownProps) {
+	return {
+		songs: state.songs
+	}
+}
+
+// mapDispatchToProps() {
+//
+// }
+
+export default connect(mapStateToProps, {getSongs, saveSong, deleteNote})(App);

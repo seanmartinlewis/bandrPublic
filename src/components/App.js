@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { getSongs, saveSong, deleteNote } from '../actions/songsAction';
+import { getUser } from '../actions/userAction';
 import SongCard from './SongCard';
 
 class App extends Component {
@@ -20,9 +21,10 @@ class App extends Component {
 	}
 
 	//lifecycle
-	componentDidMount() {
-		this.props.getSongs();
-	}
+	// componentDidMount() {
+	// 	this.props.getSongs();
+	// 	this.props.getUser();
+	// }
 
 	//handle submit
 	handleSubmit(e) {
@@ -54,10 +56,17 @@ class App extends Component {
 		return _.map(this.props.songs, (song, key) => {
 			return (
 				<SongCard key={key}>
-					<h2>{song.title}</h2>
-					<h4>{song.url}</h4>
-					<p>{song.description}</p>
-					<button className="btn btn-danger btn-xs" onClick={()=>this.props.deleteNote(key)}>delete</button>
+					<div className="container-fluid">
+						<div className="row">
+							<div className="col-sm-12">
+								<h2>{song.title}</h2>
+								<h4>{song.url}</h4>
+								<p>{song.description}</p>
+								<button className="btn btn-danger btn-xs" onClick={()=>this.props.deleteNote(key)}>delete</button>
+							</div>
+						</div>
+
+					</div>
 				</SongCard>
 			)
 		});
@@ -66,6 +75,11 @@ class App extends Component {
 	render() {
 		return (
 			<div className="container-fluid">
+				<div className="row">
+					<div className="col-sm-12 text-center">
+						<h4>Add a song to your inventory...</h4>
+					</div>
+				</div>
 				<div className="row">
 					<div className="col-sm-6 col-sm-offset-3">
 						<form onSubmit={this.handleSubmit}>
@@ -95,6 +109,7 @@ class App extends Component {
 					</div>
 				</div>
 			</div>
+
 		);
 	}
 
@@ -102,7 +117,8 @@ class App extends Component {
 
 function mapStateToProps(state, ownProps) {
 	return {
-		songs: state.songs
+		songs: state.songs,
+		user: state.user
 	}
 }
 
@@ -110,4 +126,4 @@ function mapStateToProps(state, ownProps) {
 //
 // }
 
-export default connect(mapStateToProps, {getSongs, saveSong, deleteNote})(App);
+export default connect(mapStateToProps, {getSongs, saveSong, deleteNote, getUser})(App);
